@@ -4,6 +4,8 @@ var createReadStream = fs.createReadStream;
 var EOL = require('os').EOL;
 var _ = require('lodash')
 
+var in = require('open')
+
 var files = [
   '',
   '',
@@ -11,8 +13,20 @@ var files = [
   ''
 ];
 
+/*
+[
+{
+  id: ,
+  layout: '',
+  tags: [ '', '' ]
+}
+]
+*/
+
+
+
 var filename = 'in/' + files[0] + '.in'
-var lineReader = createInterface({input: createReadStream(filename)});
+// var lineReader = createInterface({input: createReadStream(filename)});
 
 var count = 0;
 var desc = [];
