@@ -5,7 +5,9 @@ const parsor = require("./parsor");
 const validator = require("./validator");
 const { fork } = require("child_process");
 
-const input = parsor("./in/e_shiny_selfies.txt");
+const fileToUse = "d_pet_pictures";
+
+const input = parsor("./in/" + fileToUse + ".txt");
 
 // d_pet_pictures
 // e_shiny_selfies
@@ -19,7 +21,7 @@ function joinByTwo(arrayToJoin) {
 }
 
 function generateBase() {
-    const currentFile = "e_shiny_selfies";
+    const currentFile = fileToUse;
 
     const openedData = open(`./inputs/${currentFile}.txt`);
     const array = openedData.map((e, index) => {
@@ -46,7 +48,7 @@ function generateBase() {
 function shuffleFnAndScore(verticalsIndexes, horizontalsIndexes) {
     const verticalsShuffledGrouped = joinByTwo(_.shuffle(verticalsIndexes));
     let bigSol = [...verticalsShuffledGrouped, ...horizontalsIndexes];
-    bigSol = _.shuffle(bigSol);
+    // bigSol = _.shuffle(bigSol);
     bigSol.unshift([bigSol.length]);
     const parsed = parseOutput(bigSol);
     const score = validator(input, parsed);
@@ -54,18 +56,17 @@ function shuffleFnAndScore(verticalsIndexes, horizontalsIndexes) {
 }
 
 function parseOutput(data) {
-    debugger;
     return data.map(line => {
         if (typeof line !== "string") return line;
         return line.split(" ").map(l => parseInt(l));
     });
 }
 
-function compute(v, h, saveFile = "./submit") {
+function compute(v, h, saveFile = "submit") {
     let score = 0,
         shuffle = [];
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
         const [s, str] = shuffleFnAndScore(v, h);
         if (s > score) {
             shuffle = str;
@@ -73,7 +74,8 @@ function compute(v, h, saveFile = "./submit") {
         }
     }
 
-    fs.writeFileSync(`${saveFile}.${score}.txt`, shuffle.join("\n"));
+    const file = `./${fileToUse}_${saveFile}.${score}.txt`;
+    fs.writeFileSync(file, shuffle.join("\n"));
 }
 
 module.exports = compute;

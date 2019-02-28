@@ -45,7 +45,7 @@ function parseLine(map, line) {
         a.tags.forEach(t => set.add(t));
         b.tags.forEach(t => set.add(t));
     } else {
-        let a = map.get(line[0]);
+        let a = map.get(line);
         if (!a) {
             debugger;
         }
