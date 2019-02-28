@@ -10,6 +10,14 @@ const input = parsor("./in/e_shiny_selfies.txt");
 // d_pet_pictures
 // e_shiny_selfies
 
+function joinByTwo(arrayToJoin) {
+    let result = [];
+    for (var i = 0; i < arrayToJoin.length; i += 2) {
+        result.push(`${arrayToJoin[i]} ${arrayToJoin[i + 1]}`);
+    }
+    return result;
+}
+
 function generateBase() {
     const currentFile = "e_shiny_selfies";
 
@@ -26,44 +34,49 @@ function generateBase() {
         };
     });
 
-    function joinByTwo(arrayToJoin) {
-        let result = [];
-        for (var i = 0; i < arrayToJoin.length; i += 2) {
-            result.push(`${arrayToJoin[i]} ${arrayToJoin[i + 1]}`);
-        }
-        return result;
-    }
-
     const horizontals = array.filter((e, index) => e.type == "H");
     const verticals = array.filter((e, index) => e.type == "V");
 
     const verticalsIndexes = verticals.map(e => e.index - 1);
     const horizontalsIndexes = horizontals.map(e => e.index - 1);
 
+    return [verticalsIndexes, horizontalsIndexes];
+}
+
+function shuffleFnAndScore(verticalsIndexes, horizontalsIndexes) {
     const verticalsShuffledGrouped = joinByTwo(_.shuffle(verticalsIndexes));
-    const bigSol = [...verticalsShuffledGrouped, ...horizontalsIndexes];
-    return bigSol;
+    let bigSol = [...verticalsShuffledGrouped, ...horizontalsIndexes];
+    bigSol = _.shuffle(bigSol);
+    bigSol.unshift([bigSol.length]);
+    const parsed = parseOutput(bigSol);
+    const score = validator(input, parsed);
+    return [score, bigSol];
 }
 
 function parseOutput(data) {
+    debugger;
     return data.map(line => {
+        if (typeof line !== "string") return line;
         return line.split(" ").map(l => parseInt(l));
     });
 }
 
-function testCompute(bigSol) {
-    const shuffle = _.shuffle(bigSol);
-    shuffle.unshift([bigSol.length]);
-    // debugger;
-    const score = validator(input, shuffle);
-    return [score, shuffle];
-}
+function compute(v, h, saveFile = "./submit") {
+    let score = 0,
+        shuffle = [];
 
-function compute(bigSol) {
-    const parsed = parseOutput(bigSol);
-    testCompute(parsed);
+    for (let i = 0; i < 1000; i++) {
+        const [s, str] = shuffleFnAndScore(v, h);
+        if (s > score) {
+            shuffle = str;
+            score = s;
+        }
+    }
+
+    fs.writeFileSync(`${saveFile}.${score}.txt`, shuffle.join("\n"));
 }
 
 module.exports = compute;
 
-compute(generateBase());
+const [v, h] = generateBase();
+compute(v, h);
