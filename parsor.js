@@ -1,7 +1,7 @@
 const { open } = require("./open");
 
 function createFromLine(line) {
-    const lineSplit = line.split(" ");
+    const lineSplit = line.split(" ").filter(e => e.length !== 0);
     const tags = lineSplit.slice(2);
     return {
         tags,
